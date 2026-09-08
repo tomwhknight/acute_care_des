@@ -1,0 +1,179 @@
+# global_parameters.py
+
+import os
+from src.helper import rota_peak
+class GlobalParameters:
+    """Contains constants and parameters used across the simulation (e.g., arrival rates, service times)."""
+    def __init__(self, 
+                ambulance_proportion,
+                walk_in_proportion,
+                proportion_direct_primary_care,
+                ambulance_acuity_probabilities,
+                walk_in_acuity_probabilities,
+                paediatric_referral_rate,
+                ambulance_triage_nurse_capacity,
+                walk_in_triage_nurse_capacity,
+                shift_patterns_weekday,
+                shift_patterns_weekend,
+                medical_doctor_capacity,
+                consultant_capacity,
+                sdec_open_hour,
+                sdec_close_hour,
+                max_sdec_capacity, 
+                weekday_sdec_base_capacity,
+                weekend_sdec_base_capacity,
+                sdec_prob_threshold,
+                max_amu_available_beds,
+                amu_queue_soft, 
+                amu_queue_hard,
+                amu_surge_max_scale,
+                mu_triage_assessment_time,
+                sigma_triage_assessment_time,
+                mu_ed_service_time,
+                sigma_ed_service_time,
+                mu_ed_decision_time,
+                sigma_ed_decision_time,
+                joint_gamma,
+                decision_hazard_strength_240,
+                adjustment_start,
+                adjustment_end,
+                mu_medical_service_time,
+                sigma_medical_service_time,
+                initial_medicine_discharge_prob,
+                consultant_discharge_prob,
+                mu_consultant_assessment_time,
+                sigma_consultant_assessment_time,
+                mu_surgical_bed_delay,
+                sigma_surgical_bed_delay,
+                prob_referral_to_medicine_adult,
+                direct_triage_threshold,
+                burn_in_time,
+                cool_down_time,
+                simulation_time,
+                referral_sensitivity_on=False,
+                referral_odds_multiplier=1.0,
+                ):
+
+
+            # Determine the project root directory (parent of src)
+            self.project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            
+            # Define the file path for generators
+            self.arrival_rate_file = os.path.join(self.project_dir, "data/generator_distributions/arrival_rate.csv")
+            self.booked_rate_file = os.path.join(self.project_dir, "data/generator_distributions/is_booked_prob.csv")
+            self.amu_bed_rate_file = os.path.join(self.project_dir, "data/generator_distributions/amu_bed_rate.csv")
+            self.sdec_slot_rate_file = os.path.join(self.project_dir, "data/generator_distributions/sdec_slot_rate.csv")    
+        
+            # Define the file path for staffing resources
+            self.ed_staffing_file = os.path.join(self.project_dir, "data/staffing_resource/ed_staffing.csv")
+            self.medicine_staffing_file = os.path.join(self.project_dir, "data/staffing_resource/medicine_staffing.csv")
+            
+            # Define the file path for patient attributes
+            self.news2_file = os.path.join(self.project_dir, "data/patient_attributes/news2_distribution.csv")
+            self.admission_probability_file = os.path.join(self.project_dir, "data/patient_attributes/calibrated_probability_distribution.csv")
+          
+            # Mode of arrival
+            self.ambulance_proportion = ambulance_proportion
+            self.walk_in_proportion = walk_in_proportion
+    
+            # Patient characteristics
+            self.ambulance_acuity_probabilities = ambulance_acuity_probabilities
+            self.walk_in_acuity_probabilities = walk_in_acuity_probabilities
+            
+            # Source of referral 
+            self.proportion_direct_primary_care = proportion_direct_primary_care
+
+            # Outcome thresholds
+            self.paediatric_referral_rate = paediatric_referral_rate
+        
+            # Medicine discharge probabilities
+            self.initial_medicine_discharge_prob = initial_medicine_discharge_prob
+            self.consultant_discharge_prob = consultant_discharge_prob
+        
+            # Define the resources
+            self.ambulance_triage_nurse_capacity = ambulance_triage_nurse_capacity
+            self.walk_in_triage_nurse_capacity = walk_in_triage_nurse_capacity
+         
+            # Shift patterns
+            self.shift_patterns_weekday = shift_patterns_weekday  # list[dict]
+            self.shift_patterns_weekend = shift_patterns_weekend  # list[dict]
+
+            self.medical_doctor_capacity = medical_doctor_capacity
+            self.consultant_capacity = consultant_capacity
+
+            # Define store values 
+            self.max_amu_available_beds = max_amu_available_beds # refers max available to transfer at any point (not total AMU capacity)
+            self.max_sdec_capacity = max_sdec_capacity # refers max available to transfer at any point (not total SDEC capacity)
+            self.amu_queue_soft = amu_queue_soft
+            self.amu_queue_hard = amu_queue_hard
+            self.amu_surge_max_scale = amu_surge_max_scale
+
+            self.sdec_open_hour = sdec_open_hour   # hour SDEC opens
+            self.sdec_close_hour = sdec_close_hour # hour SDEC stops accepting referrals
+
+            self.weekday_sdec_base_capacity = weekday_sdec_base_capacity
+            self.weekend_sdec_base_capacity = weekend_sdec_base_capacity
+        
+            self.sdec_prob_threshold = sdec_prob_threshold
+
+            # Assessment times   
+            self.mu_triage_assessment_time   = mu_triage_assessment_time
+            self.sigma_triage_assessment_time = sigma_triage_assessment_time            
+
+            self.mu_ed_service_time = mu_ed_service_time
+            self.sigma_ed_service_time = sigma_ed_service_time
+
+            self.mu_ed_decision_time = mu_ed_decision_time
+            self.sigma_ed_decision_time = sigma_ed_decision_time
+
+            self.joint_gamma = joint_gamma
+            self.decision_hazard_strength_240  = decision_hazard_strength_240 
+            self.adjustment_start = adjustment_start
+            self.adjustment_end = adjustment_end
+
+            self.mu_medical_service_time =  mu_medical_service_time
+            self.sigma_medical_service_time =  sigma_medical_service_time
+
+            self.mu_consultant_assessment_time   = mu_consultant_assessment_time
+            self.sigma_consultant_assessment_time = sigma_consultant_assessment_time
+
+            self.mu_surgical_bed_delay = mu_surgical_bed_delay
+            self.sigma_surgical_bed_delay = sigma_surgical_bed_delay
+
+            # Scenario analysis
+
+            self.prob_referral_to_medicine_adult = prob_referral_to_medicine_adult
+            self.direct_triage_threshold = direct_triage_threshold
+
+            # Alt (direct-to-medicine): among DT-eligible, proportion who actually go direct
+            self.direct_medicine_uptake_prob = 1.0
+
+            # Alt2 (direct-to-consultant): among Alt2-eligible, proportion who attempt direct consultant
+            self.alt2_direct_consultant_uptake_prob = 1.0
+
+
+            # --- Alt2 staffing redirection (defaults: OFF) ---
+            self.alt2_medical_redirection_on = False
+            self.alt2_redirection_n_medical_to_ed = 3
+            self.alt2_min_medical_capacity_floor = 2
+            self.alt2_redirection_start_hour = 9
+            self.alt2_redirection_end_hour = 21
+
+            # Sim duration
+            self.burn_in_time = burn_in_time
+            self.cool_down_time  = cool_down_time
+            self.simulation_time = simulation_time
+
+            # --- RNG seeds (set by trial/run before building Model) ---
+            self.seed_arrivals: int | None  = None   # inter-arrival & SDEC gap times
+            self.seed_service: int | None   = None   # all service-time distributions
+            self.seed_probs: int | None     = None   # Bernoulli & weighted choices
+            self.seed_resources: int | None = None   # Poisson counts & jitter/uniforms
+
+            # --- Referral sensitivity analysis (defaults: OFF) ---
+            self.referral_sensitivity_on = referral_sensitivity_on
+            self.referral_odds_multiplier = referral_odds_multiplier
+
+            # Label for scenario-level outputs (used by AltModel / AltTrial)
+            self.scenario_name = "alt_baseline"
+
